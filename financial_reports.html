@@ -7,7 +7,6 @@
     <title>SOFT-WORLD</title>
     <link href="css/style.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
-    <!-- <script type="text/javascript" src="js/index.js"></script> -->
     <script type="text/javascript" src="js/menu.js"></script>
     <style>
       #financial_sw .content h4 {
@@ -1503,26 +1502,48 @@
 
     <script>
       $(document).ready(function () {
-        // 先隱藏所有 section，再顯示預設的（第一個）
+        // 函式：根據畫面寬度更新 section 顯示狀態
+        function updateSectionDisplay() {
+          const isMobile = $(window).width() <= 768;
+
+          if (isMobile) {
+            // 手機版：顯示所有 section
+            $("section").css("display", "block");
+          } else {
+            // 桌機版：只顯示 active 的 section
+            const activeContent = $(".sidebar li.active").data("content");
+            $("section").hide();
+            $('section[data-content="' + activeContent + '"]').show();
+          }
+        }
+
+        // 初始隱藏所有 section，顯示第一個
         $("section").hide();
         const firstContent = $(".sidebar li:first").data("content");
         $('section[data-content="' + firstContent + '"]').show();
         $(".sidebar li:first").addClass("active");
 
-        // sidebar 點擊切換功能
+        // 點擊 sidebar 切換內容
         $(".sidebar li").click(function () {
-          // 1. 移除所有 active 樣式
           $(".sidebar li").removeClass("active");
-          // 2. 為點擊的這個加上 active 樣式
           $(this).addClass("active");
 
-          // 3. 取得對應的 data-content 名稱
           const contentKey = $(this).data("content");
 
-          // 4. 隱藏所有 section，再顯示指定的那個
-          $("section").hide();
-          $('section[data-content="' + contentKey + '"]').fadeIn(200);
+          const isMobile = $(window).width() <= 768;
+          if (!isMobile) {
+            $("section").hide();
+            $('section[data-content="' + contentKey + '"]').fadeIn(200);
+          }
         });
+
+        // 畫面大小變化時自動更新 section 顯示
+        $(window).on("resize", function () {
+          updateSectionDisplay();
+        });
+
+        // 初始也要呼叫一次
+        updateSectionDisplay();
       });
     </script>
   </body>
